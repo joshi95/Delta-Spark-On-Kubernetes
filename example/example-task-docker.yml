@@ -1,0 +1,6 @@
+FROM 9990666275/delta-spark-on-kubernetes-spark-3.1.1:latest
+USER 0
+RUN pip install delta-spark==1.0.1
+COPY example/example-task.py /opt/spark/examples/src/main/python/task.py
+COPY hadoop-aws-3.2.0.jar /opt/spark-jars/hadoop-aws-3.2.0.jar
+COPY delta-core_2.12-1.0.0.jar /opt/spark-jars/delta-core_2.12-1.0.0.jar
