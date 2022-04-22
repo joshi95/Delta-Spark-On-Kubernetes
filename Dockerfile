@@ -5,7 +5,6 @@ ENV aws_java_sdk_version=1.11.797
 ENV hadoop_version=3.2.0
 ENV spark_version=3.1.1
 
-
 RUN apt-get update \
   && echo "deb http://ftp.us.debian.org/debian sid main" >> /etc/apt/sources.list \
   && mkdir -p /usr/share/man/man1 \
@@ -35,7 +34,7 @@ RUN mkdir hive && tar xzf hive.tar.gz --strip-components=1 -C hive
 WORKDIR /hive
 # Patch copied from: https://issues.apache.org/jira/secure/attachment/12958418/HIVE-12679.branch-2.3.patch
 COPY ./aws-glue-spark-hive-client/HIVE-12679.branch-2.3.patch hive.patch
-RUN patch -p0 <hive.patch && mvn clean install -DskipTests
+RUN patch -p0 <hive.patch && mvn clean  install -DskipTests
 
 # Now with hive patched and installed, build the glue client
 RUN git clone https://github.com/viaduct-ai/aws-glue-data-catalog-client-for-apache-hive-metastore /catalog
@@ -117,13 +116,13 @@ RUN chmod a+x /opt/decom.sh
 
 USER 0
 
-RUN mkdir ${SPARK_HOME}/python
+RUN mkdir $SPARK_HOME/python
 RUN apt-get update && \
   apt install -y python3 python3-pip && \
   pip3 install --upgrade pip setuptools && \
   rm -r /root/.cache && rm -rf /var/cache/apt/*
 
-COPY --from=build-spark /spark/dist/python/pyspark ${SPARK_HOME}/python/pyspark
+COPY --from=build-spark /spark/dist/python/pyspark $SPARK_HOME/python/pyspark
 COPY --from=build-spark /spark/dist/python/lib $SPARK_HOME/python/lib
 
 ENV PATH "$PATH:$SPARK_HOME/bin"
